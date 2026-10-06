@@ -1,0 +1,169 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-green: #017234;
+  --color-green-dark: #01592a;
+  --color-green-950: #00321a;
+  --color-green-50: #e9f5ee;
+  --color-brand-orange: #fa4705;
+  --color-orange-cta: #c93a00;
+  --color-orange-cta-hover: #a83000;
+  --color-orange-50: #fff1ea;
+  --color-ink: #17221d;
+  --color-muted: #55615b;
+  --color-line: #dfe6e2;
+  --color-surface: #f5f8f6;
+  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: #ffffff;
+  color: var(--color-ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@utility container-page {
+  @apply mx-auto w-full max-w-6xl px-4 sm:px-6;
+}
+
+@utility btn {
+  @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold transition-colors focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-brand-orange disabled:cursor-not-allowed disabled:opacity-60;
+}
+
+@utility btn-primary {
+  @apply btn bg-orange-cta text-white hover:bg-orange-cta-hover;
+}
+
+@utility btn-green {
+  @apply btn bg-brand-green text-white hover:bg-green-dark;
+}
+
+@utility btn-outline {
+  @apply btn border border-line bg-white text-ink hover:border-brand-green hover:text-brand-green;
+}
+
+@utility btn-sm {
+  @apply min-h-9 px-3 py-1.5 text-xs;
+}
+
+@utility card {
+  @apply rounded-2xl border border-line bg-white shadow-sm;
+}
+
+@utility label {
+  @apply mb-1 block text-sm font-medium text-ink;
+}
+
+@utility input {
+  @apply block min-h-11 w-full rounded-xl border border-line bg-white px-3 py-2 text-base text-ink placeholder:text-muted/70 focus:border-brand-green focus:outline-2 focus:outline-brand-green/30 sm:text-sm;
+}
+
+@utility heading-section {
+  @apply text-2xl font-bold tracking-tight text-ink sm:text-3xl;
+}
+
+@utility eyebrow {
+  @apply text-xs font-semibold uppercase tracking-widest text-orange-cta;
+}
+
+@utility badge {
+  @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold;
+}
+
+@utility table {
+  @apply w-full text-left text-sm;
+}
+
+@layer components {
+  .table th {
+    @apply border-b border-line px-3 py-2 text-xs font-semibold uppercase tracking-wide text-muted;
+  }
+  .table td {
+    @apply border-b border-line px-3 py-2 align-top;
+  }
+}
+
+/* ─── Animation du logo ─────────────────────────────────────────────── */
+.logo-ring {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: ring-draw 1s ease-out forwards;
+}
+.logo-car {
+  opacity: 0;
+  animation: car-in 0.8s 0.6s ease-out forwards;
+}
+.logo-word {
+  clip-path: inset(0 100% 0 0);
+  animation: word-reveal 0.8s 1.2s ease-out forwards;
+}
+@keyframes ring-draw {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes car-in {
+  from { opacity: 0; transform: translateX(-12%); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes word-reveal {
+  to { clip-path: inset(0 0 0 0); }
+}
+
+/* ─── Décor animé (boucle de 8 s) ───────────────────────────────────── */
+.hero-scene .car { animation: drive 8s linear infinite; }
+.hero-scene .car-1 { animation-delay: -1s; }
+.hero-scene .car-2 { animation-delay: -4.5s; }
+.hero-scene .car-3 { animation-duration: 10s; animation-delay: -7s; }
+.hero-scene .car-4 { animation-name: drive-back; animation-duration: 9s; animation-delay: -2s; }
+.hero-scene .car-5 { animation-name: drive-back; animation-duration: 9s; animation-delay: -6.5s; }
+.hero-scene .lane { animation: lane 1s linear infinite; }
+.hero-scene .waves { animation: waves 4s ease-in-out infinite alternate; }
+.hero-scene .car > g { animation: bounce 0.6s ease-in-out infinite alternate; }
+.hero-scene.is-paused *,
+.hero-scene.is-paused { animation-play-state: paused !important; }
+
+@keyframes drive {
+  from { translate: -1000px 0; }
+  to { translate: 1000px 0; }
+}
+@keyframes drive-back {
+  from { translate: 1000px 0; }
+  to { translate: -1000px 0; }
+}
+@keyframes lane {
+  to { translate: -80px 0; }
+}
+@keyframes waves {
+  to { translate: -20px 2px; }
+}
+@keyframes bounce {
+  to { translate: 0 -1px; }
+}
+
+/* Réduction des mouvements : composition statique (les voitures restent à leur place). */
+@media (prefers-reduced-motion: reduce) {
+  .hero-scene *,
+  .logo-ring,
+  .logo-car,
+  .logo-word {
+    animation: none !important;
+  }
+  .logo-ring { stroke-dashoffset: 0; }
+  .logo-car { opacity: 1; }
+  .logo-word { clip-path: none; }
+}

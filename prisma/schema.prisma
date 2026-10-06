@@ -1,0 +1,509 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Comptes ────────────────────────────────────────────────────────────────
+
+enum Role {
+  CLIENT
+  OWNER
+  MANAGER
+  ADMIN
+}
+
+model User {
+  id              String    @id @default(cuid())
+  email           String    @unique
+  passwordHash    String
+  name            String
+  phone           String?
+  role            Role      @default(CLIENT)
+  emailVerifiedAt DateTime?
+  totpSecret      String?
+  totpEnabledAt   DateTime?
+  disabledAt      DateTime?
+  marketingOptIn  Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  sessions          Session[]
+  tokens            AuthToken[]
+  bookings          Booking[]
+  ownedVehicles     Vehicle[]          @relation("VehicleOwner")
+  ownerApplications OwnerApplication[]
+  documents         Document[]
+  serviceRequests   ServiceRequest[]
+  saleInquiries     SaleInquiry[]
+  saleProposals     SaleProposal[]
+  activity          ActivityLog[]
+}
+
+model Session {
+  id          String   @id @default(cuid())
+  tokenHash   String   @unique
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // Pour les administrateurs : la session n'est complète qu'après le second facteur.
+  mfaVerified Boolean  @default(false)
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+}
+
+enum AuthTokenKind {
+  EMAIL_VERIFICATION
+  PASSWORD_RESET
+}
+
+model AuthToken {
+  id        String        @id @default(cuid())
+  tokenHash String        @unique
+  kind      AuthTokenKind
+  userId    String
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime      @default(now())
+}
+
+model RateLimit {
+  key       String   @id
+  count     Int
+  resetAt   DateTime
+}
+
+// ─── Véhicules ──────────────────────────────────────────────────────────────
+
+enum VehicleStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum SaleStatus {
+  AVAILABLE
+  RESERVED
+  SOLD
+}
+
+enum Transmission {
+  MANUAL
+  AUTOMATIC
+}
+
+enum Fuel {
+  PETROL
+  DIESEL
+  HYBRID
+  ELECTRIC
+}
+
+enum Category {
+  CITADINE
+  BERLINE
+  SUV
+  QUATRE_QUATRE
+  PICKUP
+  MINIBUS
+  PRESTIGE
+  UTILITAIRE
+}
+
+model Vehicle {
+  id           String        @id @default(cuid())
+  slug         String        @unique
+  brand        String
+  model        String
+  year         Int
+  category     Category
+  transmission Transmission
+  fuel         Fuel
+  seats        Int
+  features     String[]
+  description  String        @default("")
+  city         String        @default("Abidjan")
+  zone         String        @default("")
+  // Données privées : jamais affichées publiquement.
+  plate        String?
+  status       VehicleStatus @default(DRAFT)
+  featured     Boolean       @default(false)
+  isDemo       Boolean       @default(false)
+  ownerId      String?
+  owner        User?         @relation("VehicleOwner", fields: [ownerId], references: [id])
+  applicationId String?      @unique
+  application  OwnerApplication? @relation(fields: [applicationId], references: [id])
+
+  // Location
+  forRent            Boolean @default(true)
+  dailyPrice         Int?    // FCFA par tranche de 24 h
+  includedKmPerDay   Int?
+  extraKmPrice       Int?
+  deposit            Int?
+  withDriver         Boolean @default(false)
+  withoutDriver      Boolean @default(true)
+  driverDailyPrice   Int?
+  deliveryAvailable  Boolean @default(false)
+  deliveryFee        Int?
+  rentalConditions   String  @default("")
+  cancellationPolicy String  @default("")
+  minDays            Int     @default(1)
+
+  // Vente
+  forSale        Boolean    @default(false)
+  salePrice      Int?
+  mileage        Int?
+  saleCondition  String     @default("")
+  visitConditions String    @default("")
+  saleStatus     SaleStatus @default(AVAILABLE)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  photos          VehiclePhoto[]
+  unavailabilities Unavailability[]
+  bookings        Booking[]
+  reviews         Review[]
+  saleInquiries   SaleInquiry[]
+
+  @@index([status, forRent])
+  @@index([status, forSale])
+}
+
+model VehiclePhoto {
+  id        String  @id @default(cuid())
+  vehicleId String
+  vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  url       String
+  alt       String  @default("")
+  position  Int     @default(0)
+}
+
+enum UnavailabilityReason {
+  MAINTENANCE
+  OWNER
+  OTHER
+}
+
+model Unavailability {
+  id        String               @id @default(cuid())
+  vehicleId String
+  vehicle   Vehicle              @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  startAt   DateTime
+  endAt     DateTime
+  reason    UnavailabilityReason @default(OTHER)
+  note      String               @default("")
+  createdAt DateTime             @default(now())
+
+  @@index([vehicleId, startAt, endAt])
+}
+
+// ─── Réservations ───────────────────────────────────────────────────────────
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  REFUSED
+}
+
+enum PaymentStatus {
+  UNPAID
+  PARTIAL
+  PAID
+  REFUNDED
+}
+
+model Booking {
+  id             String        @id @default(cuid())
+  reference      String        @unique
+  vehicleId      String
+  vehicle        Vehicle       @relation(fields: [vehicleId], references: [id])
+  userId         String?
+  user           User?         @relation(fields: [userId], references: [id])
+  customerName   String
+  customerEmail  String
+  customerPhone  String
+  message        String        @default("")
+  pickupLocation String
+  startAt        DateTime
+  endAt          DateTime
+  // Fin de la période bloquée (fin + marge entre deux locations).
+  blockedUntil   DateTime
+  withDriver     Boolean       @default(false)
+  delivery       Boolean       @default(false)
+
+  // Calcul figé au moment de la demande (côté serveur).
+  billedDays     Int
+  unitPrice      Int
+  rentalTotal    Int
+  driverTotal    Int           @default(0)
+  deliveryTotal  Int           @default(0)
+  feesTotal      Int           @default(0)
+  taxTotal       Int           @default(0)
+  total          Int
+  deposit        Int           @default(0)
+
+  status         BookingStatus @default(PENDING)
+  paymentStatus  PaymentStatus @default(UNPAID)
+  decisionReason String        @default("")
+  decidedAt      DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  review Review?
+
+  @@index([vehicleId, status])
+  @@index([customerEmail])
+}
+
+// ─── Propriétaires ──────────────────────────────────────────────────────────
+
+enum ApplicationStatus {
+  DRAFT
+  SUBMITTED
+  INCOMPLETE
+  IN_REVIEW
+  APPROVED
+  REJECTED
+  SUSPENDED
+}
+
+model OwnerApplication {
+  id            String            @id @default(cuid())
+  reference     String            @unique
+  userId        String
+  user          User              @relation(fields: [userId], references: [id])
+  status        ApplicationStatus @default(DRAFT)
+  ownerName     String
+  ownerPhone    String
+  city          String
+  brand         String
+  model         String
+  year          Int
+  mileage       Int
+  transmission  Transmission
+  fuel          Fuel
+  availability  String            @default("")
+  desiredPrice  Int?
+  message       String            @default("")
+  adminNote     String            @default("")
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  documents Document[]
+  history   ApplicationEvent[]
+  vehicle   Vehicle?
+}
+
+model ApplicationEvent {
+  id            String            @id @default(cuid())
+  applicationId String
+  application   OwnerApplication  @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  status        ApplicationStatus
+  note          String            @default("")
+  actorId       String?
+  createdAt     DateTime          @default(now())
+}
+
+enum DocumentKind {
+  VEHICLE_PHOTO
+  OWNERSHIP_PROOF
+  VEHICLE_PAPERS
+  INSURANCE
+  IDENTITY
+  DRIVING_LICENSE
+  OTHER
+}
+
+// Justificatif privé : stocké hors du dossier public, servi après contrôle d'accès.
+model Document {
+  id             String            @id @default(cuid())
+  userId         String
+  user           User              @relation(fields: [userId], references: [id])
+  applicationId  String?
+  application    OwnerApplication? @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  saleProposalId String?
+  saleProposal   SaleProposal?     @relation(fields: [saleProposalId], references: [id], onDelete: Cascade)
+  kind           DocumentKind
+  storageKey     String            @unique
+  originalName   String
+  mimeType       String
+  size           Int
+  createdAt      DateTime          @default(now())
+}
+
+// ─── Service particulier ────────────────────────────────────────────────────
+
+model ServiceType {
+  id          String  @id @default(cuid())
+  slug        String  @unique
+  name        String
+  description String  @default("")
+  priceLabel  String  @default("Sur devis")
+  active      Boolean @default(true)
+  position    Int     @default(0)
+
+  requests ServiceRequest[]
+}
+
+enum ServiceRequestStatus {
+  NEW
+  INFO_REQUESTED
+  QUOTED
+  ACCEPTED
+  SCHEDULED
+  DONE
+  CANCELLED
+}
+
+model ServiceRequest {
+  id            String               @id @default(cuid())
+  reference     String               @unique
+  serviceTypeId String
+  serviceType   ServiceType          @relation(fields: [serviceTypeId], references: [id])
+  userId        String?
+  user          User?                @relation(fields: [userId], references: [id])
+  date          DateTime
+  time          String
+  departure     String
+  destination   String               @default("")
+  passengers    Int                  @default(1)
+  duration      String               @default("")
+  category      String               @default("")
+  name          String
+  email         String
+  phone         String
+  message       String               @default("")
+  status        ServiceRequestStatus @default(NEW)
+  quoteAmount   Int?
+  quoteNote     String               @default("")
+  scheduledAt   DateTime?
+  internalNote  String               @default("")
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+}
+
+// ─── Achat & vente ──────────────────────────────────────────────────────────
+
+enum InquiryKind {
+  INFO
+  VISIT
+}
+
+enum LeadStatus {
+  NEW
+  IN_PROGRESS
+  CLOSED
+}
+
+model SaleInquiry {
+  id            String      @id @default(cuid())
+  reference     String      @unique
+  vehicleId     String
+  vehicle       Vehicle     @relation(fields: [vehicleId], references: [id])
+  userId        String?
+  user          User?       @relation(fields: [userId], references: [id])
+  kind          InquiryKind
+  name          String
+  email         String
+  phone         String
+  preferredDate DateTime?
+  message       String      @default("")
+  status        LeadStatus  @default(NEW)
+  createdAt     DateTime    @default(now())
+}
+
+model SaleProposal {
+  id           String            @id @default(cuid())
+  reference    String            @unique
+  userId       String
+  user         User              @relation(fields: [userId], references: [id])
+  brand        String
+  model        String
+  year         Int
+  mileage      Int
+  transmission Transmission
+  fuel         Fuel
+  askingPrice  Int
+  city         String
+  description  String            @default("")
+  status       ApplicationStatus @default(SUBMITTED)
+  adminNote    String            @default("")
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
+  documents Document[]
+}
+
+// ─── Contenus ───────────────────────────────────────────────────────────────
+
+model HomeSection {
+  key      String  @id
+  title    String
+  subtitle String  @default("")
+  enabled  Boolean @default(true)
+  position Int
+}
+
+model Faq {
+  id        String  @id @default(cuid())
+  question  String
+  answer    String
+  position  Int     @default(0)
+  published Boolean @default(true)
+}
+
+model Advantage {
+  id          String  @id @default(cuid())
+  title       String
+  description String
+  position    Int     @default(0)
+  published   Boolean @default(true)
+}
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+// Un avis n'est possible qu'après une location terminée (bookingId unique).
+model Review {
+  id        String       @id @default(cuid())
+  bookingId String       @unique
+  booking   Booking      @relation(fields: [bookingId], references: [id])
+  vehicleId String
+  vehicle   Vehicle      @relation(fields: [vehicleId], references: [id])
+  author    String
+  rating    Int
+  comment   String
+  status    ReviewStatus @default(PENDING)
+  createdAt DateTime     @default(now())
+}
+
+model Setting {
+  key   String @id
+  value Json
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  actorId   String?
+  actor     User?    @relation(fields: [actorId], references: [id])
+  entity    String
+  entityId  String
+  action    String
+  data      Json?
+  createdAt DateTime @default(now())
+
+  @@index([entity, entityId])
+  @@index([createdAt])
+}
