@@ -62,11 +62,14 @@ export default async function RentalCatalogue({ searchParams }: { searchParams: 
 
       <div className="mt-8 grid gap-8 lg:grid-cols-[260px_1fr]">
         <aside aria-label="Filtres complémentaires">
-          <form action="/location" method="get" className="card space-y-4 p-5">
+          <details className="card group p-5" open={!!(sp.marque || sp.boite || sp.carburant || sp.places || sp.equipement)}>
+          <summary className="flex cursor-pointer list-none items-center justify-between font-semibold [&::-webkit-details-marker]:hidden">
+            Plus de filtres <span className="text-orange-cta transition-transform group-open:rotate-45" aria-hidden="true">+</span>
+          </summary>
+          <form action="/location" method="get" className="mt-4 space-y-4">
             {["lieu", "depart", "retour", "categorie", "budget", "chauffeur"].map((k) =>
               sp[k] ? <input key={k} type="hidden" name={k} value={sp[k]} /> : null,
             )}
-            <p className="font-semibold">Affiner</p>
             <Select name="marque" label="Marque" value={sp.marque} options={brands.map((b) => ({ value: b.brand, label: b.brand }))} />
             <Select name="boite" label="Boîte de vitesses" value={sp.boite} options={enumOptions(TRANSMISSION_LABELS)} />
             <Select name="carburant" label="Carburant" value={sp.carburant} options={enumOptions(FUEL_LABELS)} />
@@ -75,6 +78,7 @@ export default async function RentalCatalogue({ searchParams }: { searchParams: 
             <button type="submit" className="btn-green w-full">Appliquer</button>
             <Link href="/location" className="block text-center text-sm text-muted underline">Réinitialiser</Link>
           </form>
+          </details>
         </aside>
 
         <section aria-live="polite">

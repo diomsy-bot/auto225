@@ -1,0 +1,27 @@
+# Déploiement sur un serveur (VPS) : application + PostgreSQL + volumes persistants.
+# Placer un proxy HTTPS (Caddy, Nginx…) devant le port 3000.
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: auto225
+      POSTGRES_USER: auto225
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?à définir}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+  app:
+    build: .
+    restart: unless-stopped
+    depends_on: [db]
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://auto225:${POSTGRES_PASSWORD}@db:5432/auto225
+      STORAGE_DIR: /data/storage
+    ports:
+      - "127.0.0.1:3000:3000"
+    volumes:
+      - storage:/data/storage
+volumes:
+  pgdata:
+  storage:
