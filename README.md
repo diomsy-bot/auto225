@@ -65,6 +65,14 @@ docker compose exec app npm run db:seed
 
 Sauvegarde quotidienne : planifier `scripts/backup.sh` (cron) et copier les fichiers vers un stockage indépendant. Restaurer une sauvegarde sur un environnement de test avant le lancement.
 
+## Saisie assistée par IA
+
+Dans l'admin, **Véhicules > Saisie assistée (IA)** crée une fiche en brouillon à partir de l'annonce qu'un vendeur ou un loueur a envoyée à AUTO225 (texte collé + photos). L'IA (Claude, d'Anthropic) remplit marque, modèle, prix, kilométrage, etc. ; les téléphones, emails et liens sont retirés de la description ; l'accord du vendeur et la provenance sont gardés dans le journal. Rien n'est publié sans relecture.
+
+Pour l'activer, renseigner `ANTHROPIC_API_KEY` (clé créée sur console.anthropic.com) dans le `.env` du serveur, puis redémarrer l'application. Coût indicatif : quelques centimes d'euro par annonce.
+
+Cette fonction ne doit pas servir à recopier les annonces d'autres sites : les conditions de CoinAfrique (article 5) interdisent robots, extraction et reproduction de leurs annonces.
+
 ## Organisation du code
 
 ```

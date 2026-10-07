@@ -12,8 +12,10 @@ import { BOOKING_STATUS_LABELS, UNAVAILABILITY_LABELS } from "@/lib/labels";
 
 export const metadata = { title: "Véhicule" };
 
-export default async function VehicleAdmin({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ cree?: string }> }) {
-  const [{ id }, { cree }] = await Promise.all([params, searchParams]);
+export default async function VehicleAdmin({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ cree?: string; importe?: string }> }) {
+  const [{ id }, { cree, importe }] = await Promise.all([params, searchParams]);
+  const importLog = importe ? await db.activityLog.findFirst({ where: { entity: "Vehicle", entityId: id, action: "imported_ai" }, orderBy: { createdAt: "desc" } }) : null;
+  const importWarnings = ((importLog?.data as { warnings?: unknown } | null)?.warnings ?? []) as string[];
   const vehicle = await db.vehicle.findUnique({
     where: { id },
     include: {
@@ -42,6 +44,12 @@ export default async function VehicleAdmin({ params, searchParams }: { params: P
         </div>
       </div>
       {cree && <p role="status" className="rounded-xl bg-green-50 px-4 py-3 text-sm text-brand-green">Véhicule créé. Ajoutez des photos puis publiez-le.</p>}
+      {importe && (
+        <div role="status" className="rounded-xl bg-orange-50 px-4 py-3 text-sm">
+          <p className="font-semibold">Fiche pré-remplie par l&apos;IA, en brouillon. Relisez chaque champ et les photos avant de publier.</p>
+          {importWarnings.length > 0 && <ul className="mt-2 list-disc pl-5">{importWarnings.map((w, i) => <li key={i}>{w}</li>)}</ul>}
+        </div>
+      )}
       {vehicle.application && <p className="text-sm">Issu du dossier <Link href={`/admin/proprietaires/${vehicle.application.id}`} className="font-mono text-brand-green underline">{vehicle.application.reference}</Link></p>}
 
       <section className="card p-5">
