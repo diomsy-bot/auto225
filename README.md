@@ -55,11 +55,11 @@ npm run test:e2e      # parcours complets dans un navigateur (serveur lancé aut
 
 ## Mise en production
 
-Les photos et justificatifs sont stockés sur disque : il faut un hébergement avec **disque persistant** (VPS, ou plateforme avec volume). `docker-compose.yml` fournit l'application, PostgreSQL et deux volumes persistants ; placer un proxy HTTPS (Caddy ou Nginx) devant le port 3000.
+Les photos et justificatifs sont stockés sur disque : il faut un hébergement avec **disque persistant** (VPS, ou plateforme avec volume). `docker-compose.yml` fournit l'application, PostgreSQL, le proxy HTTPS Caddy (certificat Let's Encrypt automatique, configuré dans `deploy/Caddyfile`) et des volumes persistants. Le guide pas à pas (serveur, DNS du domaine, HTTPS) est dans [docs/DEPLOIEMENT.md](docs/DEPLOIEMENT.md).
 
 ```bash
-cp .env.example .env    # renseigner APP_URL, SMTP_URL, TEAM_EMAIL, mots de passe
-POSTGRES_PASSWORD=... docker compose up -d --build
+cp .env.example .env    # renseigner APP_URL, DOMAIN, POSTGRES_PASSWORD, SMTP_URL, TEAM_EMAIL, mots de passe
+docker compose up -d --build
 docker compose exec app npm run db:seed
 ```
 

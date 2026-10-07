@@ -1,5 +1,5 @@
-# Déploiement sur un serveur (VPS) : application + PostgreSQL + volumes persistants.
-# Placer un proxy HTTPS (Caddy, Nginx…) devant le port 3000.
+# Déploiement sur un serveur (VPS) : application + PostgreSQL + proxy HTTPS (Caddy)
+# + volumes persistants. Voir docs/DEPLOIEMENT.md.
 services:
   db:
     image: postgres:16
@@ -22,6 +22,23 @@ services:
       - "127.0.0.1:3000:3000"
     volumes:
       - storage:/data/storage
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    depends_on: [app]
+    environment:
+      DOMAIN: ${DOMAIN:-auto225.com}
+      ACME_EMAIL: ${ACME_EMAIL:-contact@auto225.com}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
 volumes:
   pgdata:
   storage:
+  caddy_data:
+  caddy_config:
