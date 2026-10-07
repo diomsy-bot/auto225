@@ -17,7 +17,10 @@ export default async function VehiclesAdmin({ searchParams }: { searchParams: Pr
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-extrabold">Véhicules</h1>
-        <Link href="/admin/vehicules/nouveau" className="btn-primary btn-sm">Ajouter un véhicule</Link>
+        <div className="flex flex-wrap gap-2">
+          <Link href="/admin/vehicules/importer" className="btn-green btn-sm">Saisie assistée (IA)</Link>
+          <Link href="/admin/vehicules/nouveau" className="btn-primary btn-sm">Ajouter un véhicule</Link>
+        </div>
       </div>
       <form className="mt-4 flex gap-2">
         <input name="q" defaultValue={q} placeholder="Marque, modèle, immatriculation" className="input max-w-xs" />
