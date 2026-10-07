@@ -18,7 +18,7 @@ export const DEFAULT_CONTACT: ContactSettings = {
   companyName: "AUTO225",
   address: "Treichville, Gare de Bassam — Abidjan, Côte d'Ivoire",
   phone: "+225 07 57 86 83 69",
-  whatsapp: "2250757868369",
+  whatsapp: "2250555791610",
   email: "contact@auto225.com",
   hours: "Horaires à confirmer",
   confirmed: false,
