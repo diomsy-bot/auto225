@@ -1,0 +1,18 @@
+# Proxy HTTPS d'AUTO225.COM sur Windows Server (application sur 127.0.0.1:3000).
+# Caddy obtient et renouvelle automatiquement le certificat Let's Encrypt
+# dès que le DNS du domaine pointe vers ce serveur (ports 80 et 443 ouverts).
+{
+	email contact@auto225.com
+}
+
+auto225.com {
+	encode zstd gzip
+	request_body {
+		max_size 30MB
+	}
+	reverse_proxy 127.0.0.1:3000
+}
+
+www.auto225.com {
+	redir https://auto225.com{uri} permanent
+}
