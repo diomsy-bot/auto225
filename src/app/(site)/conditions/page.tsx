@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
+import { PageIntro } from "@/components/site/page-intro";
 
 export const metadata: Metadata = { title: "Conditions générales" };
 
 export default function TermsPage() {
   return (
-    <div className="container-page max-w-3xl py-12">
-      <h1 className="heading-section">Conditions générales</h1>
-      <p className="mt-6 rounded-xl border border-orange-200 bg-orange-50 p-4 text-sm">
+    <>
+    <PageIntro eyebrow="AUTO225 · Côte d'Ivoire" title="Conditions générales." />
+    <div className="container-page max-w-4xl py-12">
+      <p className="rounded-xl border border-orange-200 bg-orange-50 p-4 text-sm">
         Document à rédiger et à faire valider par les responsables compétents avant la mise en ligne (location, caution, annulation, assurance, sinistres, propriétaires, vente).
       </p>
       <div className="mt-6 space-y-4 text-sm text-muted">
@@ -18,5 +20,6 @@ export default function TermsPage() {
         <p>Conditions d&apos;annulation à définir.</p>
       </div>
     </div>
+    </>
   );
 }

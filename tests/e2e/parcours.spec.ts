@@ -61,7 +61,7 @@ test("ACC-02 : animation avec pause et version statique", async ({ browser }) =>
   await expect(page.getByRole("button", { name: "Lire l'animation" })).toHaveAttribute("aria-pressed", "true");
   const reduced = await browser.newPage({ reducedMotion: "reduce" });
   await reduced.goto("/");
-  const anim = await reduced.locator(".hero-scene .car-1").evaluate((el) => getComputedStyle(el).animationName);
+  const anim = await reduced.locator(".hero-scene .hero-media").evaluate((el) => getComputedStyle(el).animationName);
   expect(anim).toBe("none");
   await expect(reduced.getByRole("link", { name: /Louez un véhicule/ }).first()).toBeVisible();
 });
