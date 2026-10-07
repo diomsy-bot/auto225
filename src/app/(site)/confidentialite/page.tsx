@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
+import { PageIntro } from "@/components/site/page-intro";
 
 export const metadata: Metadata = { title: "Politique de confidentialité" };
 
 export default function PrivacyPage() {
   return (
-    <div className="container-page max-w-3xl py-12">
-      <h1 className="heading-section">Politique de confidentialité</h1>
-      <p className="mt-6 rounded-xl border border-orange-200 bg-orange-50 p-4 text-sm">
+    <>
+    <PageIntro eyebrow="AUTO225 · Vos données, votre confiance" title="Politique de confidentialité." />
+    <div className="container-page max-w-4xl py-12">
+      <p className="rounded-xl border border-orange-200 bg-orange-50 p-4 text-sm">
         Texte à valider par les responsables compétents au regard des formalités applicables en Côte d&apos;Ivoire avant la mise en ligne.
       </p>
       <div className="mt-6 space-y-4 text-sm text-muted">
@@ -20,5 +22,6 @@ export default function PrivacyPage() {
         <p>Vous pouvez demander l&apos;accès à vos données ou leur suppression depuis votre compte ou en nous contactant. Durées de conservation par catégorie à préciser.</p>
       </div>
     </div>
+    </>
   );
 }

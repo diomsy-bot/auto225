@@ -1,50 +1,52 @@
 import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
 import { getContact, whatsappLink } from "@/lib/settings";
+import { BrandLogo } from "./brand";
+
+const linkClass = "flex items-center gap-2 text-[13px] text-[#aebfb2] hover:text-white";
 
 export async function SiteFooter() {
   const contact = await getContact();
   return (
-    <footer className="mt-16 bg-green-950 text-white">
-      <div className="container-page grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-4">
-        <div>
-          <p className="text-xl font-extrabold">
-            AUTO<span className="text-brand-orange">225</span>.COM
-          </p>
-          <p className="mt-3 text-sm text-white/80">Location, gestion et vente de véhicules à Abidjan.</p>
+    <footer className="mt-16 bg-green-950 text-[#d3e0d5]">
+      <div className="container-page grid grid-cols-2 gap-x-5 gap-y-8 pt-12 pb-10 lg:grid-cols-[1.4fr_1fr_1fr_1fr] lg:gap-10">
+        <div className="col-span-2 lg:col-span-1">
+          <BrandLogo tone="dark" />
+          <p className="mt-4 text-[13px] leading-relaxed text-[#94ad9c]">Votre mobilité, simplement.<br />Abidjan · Côte d&apos;Ivoire</p>
         </div>
-        <div>
-          <p className="font-semibold">Nos services</p>
-          <ul className="mt-3 space-y-2 text-sm text-white/80">
-            <li><Link href="/location" className="hover:text-white">Louez un véhicule</Link></li>
-            <li><Link href="/proprietaires" className="hover:text-white">Mettez votre voiture en location</Link></li>
-            <li><Link href="/service-particulier" className="hover:text-white">Service particulier</Link></li>
-            <li><Link href="/achat-vente" className="hover:text-white">Achat &amp; vente</Link></li>
-          </ul>
+        <div className="flex flex-col items-start gap-3">
+          <p className="mb-1 text-sm font-semibold text-white">Explorez</p>
+          <Link href="/location" className={linkClass}>Louez un véhicule</Link>
+          <Link href="/proprietaires" className={linkClass}>Mettez votre voiture en location</Link>
+          <Link href="/service-particulier" className={linkClass}>Service particulier</Link>
+          <Link href="/achat-vente" className={linkClass}>Achat &amp; vente</Link>
         </div>
-        <div>
-          <p className="font-semibold">Informations</p>
-          <ul className="mt-3 space-y-2 text-sm text-white/80">
-            <li><Link href="/a-propos" className="hover:text-white">À propos</Link></li>
-            <li><Link href="/faq" className="hover:text-white">Questions fréquentes</Link></li>
-            <li><Link href="/conditions" className="hover:text-white">Conditions générales</Link></li>
-            <li><Link href="/confidentialite" className="hover:text-white">Confidentialité</Link></li>
-          </ul>
+        <div className="flex flex-col items-start gap-3">
+          <p className="mb-1 text-sm font-semibold text-white">Avec AUTO225</p>
+          <Link href="/a-propos" className={linkClass}>À propos</Link>
+          <Link href="/faq" className={linkClass}>Questions fréquentes</Link>
+          <Link href="/suivi" className={linkClass}>Suivre une demande</Link>
+          <Link href="/compte" className={linkClass}>Mon espace</Link>
         </div>
-        <div>
-          <p className="font-semibold">Contact</p>
-          <ul className="mt-3 space-y-2 text-sm text-white/80">
-            <li>{contact.address}</li>
-            <li><a href={`tel:${contact.phone.replace(/\s/g, "")}`} className="hover:text-white">{contact.phone}</a></li>
-            <li><a href={`mailto:${contact.email}`} className="hover:text-white">{contact.email}</a></li>
-            <li><a href={whatsappLink(contact.whatsapp)} className="hover:text-white" target="_blank" rel="noopener noreferrer">WhatsApp</a></li>
-          </ul>
-          {!contact.confirmed && (
-            <p className="mt-3 text-xs text-white/60">Coordonnées en cours de confirmation.</p>
-          )}
+        <div className="col-span-2 flex flex-col items-start gap-3 sm:col-span-1">
+          <p className="mb-1 text-sm font-semibold text-white">Restons en contact</p>
+          <span className="text-[13px] text-[#aebfb2]">{contact.address}</span>
+          <a href={`tel:${contact.phone.replace(/\s/g, "")}`} className={linkClass}>{contact.phone}</a>
+          <a href={`mailto:${contact.email}`} className={linkClass}>{contact.email}</a>
+          <a href={whatsappLink(contact.whatsapp)} className={linkClass} target="_blank" rel="noopener noreferrer">WhatsApp <ArrowUpRight size={15} aria-hidden="true" /></a>
+          <Link href="/contact" className={linkClass}>Nous écrire <ArrowUpRight size={15} aria-hidden="true" /></Link>
+          {!contact.confirmed && <span className="text-[11px] text-[#88a391]">Coordonnées en cours de confirmation.</span>}
+          <span className="mt-1 rounded-full border border-[#44654e] px-3 py-2 text-[9px] tracking-[0.1em] text-[#a8c0ae]">CONÇU POUR LA CÔTE D&apos;IVOIRE</span>
         </div>
       </div>
-      <div className="border-t border-white/10">
-        <p className="container-page py-4 text-xs text-white/60">© {new Date().getFullYear()} AUTO225.COM — Tous droits réservés.</p>
+      <div className="container-page">
+        <div className="flex flex-col gap-4 border-t border-white/10 py-5 text-[11px] text-[#88a391] sm:flex-row sm:justify-between">
+          <span>© {new Date().getFullYear()} AUTO225.COM · Tous droits réservés</span>
+          <div className="flex gap-5">
+            <Link href="/conditions" className="hover:text-white">Conditions générales</Link>
+            <Link href="/confidentialite" className="hover:text-white">Confidentialité</Link>
+          </div>
+        </div>
       </div>
     </footer>
   );

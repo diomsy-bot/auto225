@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { PageIntro } from "@/components/site/page-intro";
+import { ArrowUpRight, KeyRound, ShieldCheck } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Mettez votre voiture en location",
@@ -18,34 +20,35 @@ const STEPS = [
 export default function OwnersPage() {
   return (
     <>
-      <section className="bg-green-950 py-14 text-white">
-        <div className="container-page max-w-3xl">
-          <p className="text-xs font-semibold uppercase tracking-widest text-brand-orange">Propriétaires</p>
-          <h1 className="mt-2 text-3xl font-extrabold sm:text-4xl">Mettez votre voiture en location</h1>
-          <p className="mt-4 text-white/85">
-            AUTO225 gère la location de votre véhicule à Abidjan. Vous déposez votre dossier, nous vérifions et nous nous occupons des clients.
-          </p>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <Link href="/proprietaires/dossier" className="btn-primary">Déposer mon dossier</Link>
-            <Link href="/compte/proprietaire" className="btn border border-white/30 text-white hover:bg-white/10">Suivre mon dossier</Link>
-          </div>
-        </div>
-      </section>
+      <PageIntro
+        eyebrow="Devenez partenaire AUTO225"
+        title={<>Mettez votre voiture en location.<br /><em>De nouvelles possibilités.</em></>}
+        art={<KeyRound size={100} />}
+        actions={
+          <>
+            <Link href="/proprietaires/dossier" className="btn-green">Déposer mon dossier <ArrowUpRight size={18} aria-hidden="true" /></Link>
+            <Link href="/compte/proprietaire" className="btn-light">Suivre mon dossier</Link>
+          </>
+        }
+      >
+        AUTO225 gère la location de votre véhicule à Abidjan. Vous déposez votre dossier, nous vérifions et nous nous occupons des clients.
+      </PageIntro>
 
       <section className="container-page py-14">
-        <h2 className="heading-section">Comment ça marche</h2>
-        <ol className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <p className="eyebrow">Simple et encadré</p>
+        <h2 className="heading-section mt-3">Comment ça marche</h2>
+        <ol className="mt-9 grid gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
           {STEPS.map(([t, d], i) => (
-            <li key={t} className="card p-5">
-              <span className="text-2xl font-extrabold text-orange-cta">{i + 1}</span>
-              <p className="mt-2 font-semibold">{t}</p>
-              <p className="mt-1 text-sm text-muted">{d}</p>
+            <li key={t} className="relative pl-14 sm:pl-0">
+              <span className="absolute top-0 left-0 grid h-9 w-9 place-items-center rounded-full border border-[#dfe9dd] bg-[#f0f5ee] text-xs text-brand-green sm:static sm:mb-5 sm:h-11 sm:w-11" aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>
+              <h3 className="text-[17px] font-bold sm:text-[19px]">{t}</h3>
+              <p className="mt-2 max-w-[290px] text-[13px] leading-[1.75] text-[#6a756e]">{d}</p>
             </li>
           ))}
         </ol>
       </section>
 
-      <section className="bg-surface py-14">
+      <section className="py-6">
         <div className="container-page grid gap-8 lg:grid-cols-2">
           <div>
             <h2 className="heading-section">Responsabilités et conditions</h2>
@@ -56,8 +59,9 @@ export default function OwnersPage() {
               <li>Vous pouvez déclarer les périodes où votre véhicule n&apos;est pas disponible depuis votre espace propriétaire.</li>
             </ul>
           </div>
-          <div className="card p-6">
-            <h3 className="font-bold">Documents à prévoir</h3>
+          <div className="rounded-[10px] border border-[#d9e6d4] bg-surface p-6">
+            <ShieldCheck className="text-brand-green" aria-hidden="true" />
+            <h3 className="mt-3 font-bold">Documents à prévoir</h3>
             <ul className="mt-3 space-y-2 text-sm">
               <li>✔ Photos récentes du véhicule (extérieur et intérieur)</li>
               <li>✔ Preuve de propriété (carte grise) ou mandat du propriétaire</li>

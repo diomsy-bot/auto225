@@ -8,6 +8,7 @@ import { CATEGORY_LABELS, FUEL_LABELS, TRANSMISSION_LABELS, enumOptions } from "
 import { getOperations, getPricingRules } from "@/lib/settings";
 import { RentalSearchForm } from "@/components/vehicles/search-form";
 import { RentalCard } from "@/components/vehicles/vehicle-card";
+import { PageIntro } from "@/components/site/page-intro";
 
 export const metadata: Metadata = {
   title: "Louez un véhicule à Abidjan",
@@ -53,16 +54,16 @@ export default async function RentalCatalogue({ searchParams }: { searchParams: 
   const query = keep.size ? `?${keep}` : "";
 
   return (
+    <>
+    <PageIntro eyebrow="Prenez la route" title="Louez un véhicule.">
+      Choisissez vos dates, comparez et envoyez votre demande. Avec ou sans chauffeur, à Abidjan.
+    </PageIntro>
     <div className="container-page py-10">
-      <p className="eyebrow">Location</p>
-      <h1 className="heading-section mt-1">Louez un véhicule</h1>
-      <div className="card mt-6 p-5">
-        <RentalSearchForm locations={ops.pickupLocations} values={sp} compact />
-      </div>
+      <RentalSearchForm locations={ops.pickupLocations} values={sp} />
 
       <div className="mt-8 grid gap-8 lg:grid-cols-[260px_1fr]">
         <aside aria-label="Filtres complémentaires">
-          <details className="card group p-5" open={!!(sp.marque || sp.boite || sp.carburant || sp.places || sp.equipement)}>
+          <details className="group rounded-[10px] border border-line bg-surface p-5" open={!!(sp.marque || sp.boite || sp.carburant || sp.places || sp.equipement)}>
           <summary className="flex cursor-pointer list-none items-center justify-between font-semibold [&::-webkit-details-marker]:hidden">
             Plus de filtres <span className="text-orange-cta transition-transform group-open:rotate-45" aria-hidden="true">+</span>
           </summary>
@@ -82,7 +83,7 @@ export default async function RentalCatalogue({ searchParams }: { searchParams: 
         </aside>
 
         <section aria-live="polite">
-          <p className="text-sm text-muted">
+          <p className="font-display text-[19px] font-bold">
             {vehicles.length} véhicule{vehicles.length > 1 ? "s" : ""}
             {datesValid ? " disponible" + (vehicles.length > 1 ? "s" : "") + " sur vos dates" : ""}
           </p>
@@ -90,7 +91,7 @@ export default async function RentalCatalogue({ searchParams }: { searchParams: 
             <p className="mt-2 rounded-xl bg-orange-50 px-4 py-2 text-sm text-orange-cta">La date de retour doit être après la date de départ.</p>
           )}
           {vehicles.length === 0 ? (
-            <div className="card mt-4 p-8 text-center">
+            <div className="mt-4 rounded-[10px] border border-dashed border-[#d9e3d4] bg-surface p-10 text-center">
               <p className="font-semibold">Aucun véhicule ne correspond à votre recherche.</p>
               <p className="mt-1 text-sm text-muted">Modifiez vos dates ou vos filtres, ou demandez-nous un <Link href="/service-particulier" className="text-brand-green underline">service sur mesure</Link>.</p>
             </div>
@@ -102,6 +103,7 @@ export default async function RentalCatalogue({ searchParams }: { searchParams: 
         </section>
       </div>
     </div>
+    </>
   );
 }
 

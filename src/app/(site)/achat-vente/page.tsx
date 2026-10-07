@@ -4,6 +4,8 @@ import Link from "next/link";
 import { db } from "@/lib/db";
 import { FUEL_LABELS, TRANSMISSION_LABELS, enumOptions } from "@/lib/labels";
 import { SaleCard } from "@/components/vehicles/vehicle-card";
+import { PageIntro } from "@/components/site/page-intro";
+import { Plus } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Achat & vente de véhicules à Abidjan",
@@ -31,16 +33,16 @@ export default async function SaleCatalogue({ searchParams }: { searchParams: Pr
   ]);
 
   return (
+    <>
+    <PageIntro
+      eyebrow="Achat & vente"
+      title="Votre prochaine voiture."
+      actions={<Link href="/achat-vente/proposer" className="btn-green">Proposer un véhicule à vendre <Plus size={17} aria-hidden="true" /></Link>}
+    >
+      Des annonces à explorer. Un rendez-vous pour décider.
+    </PageIntro>
     <div className="container-page py-10">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <p className="eyebrow">Achat &amp; vente</p>
-          <h1 className="heading-section mt-1">Véhicules à vendre</h1>
-        </div>
-        <Link href="/achat-vente/proposer" className="btn-outline">Proposer mon véhicule à la vente</Link>
-      </div>
-
-      <form method="get" className="card mt-6 grid gap-3 p-5 sm:grid-cols-2 lg:grid-cols-4" role="search" aria-label="Filtrer les véhicules à vendre">
+      <form method="get" className="grid rounded-[9px] border border-[#e3e8e1] bg-white shadow-[0_7px_25px_#22392d08] gap-3 p-5 sm:grid-cols-2 lg:grid-cols-4" role="search" aria-label="Filtrer les véhicules à vendre">
         <Sel name="marque" label="Marque" value={sp.marque} options={brands.map((b) => ({ value: b.brand, label: b.brand }))} />
         <Inp name="modele" label="Modèle" value={sp.modele} />
         <Inp name="prixMin" label="Prix min (FCFA)" value={sp.prixMin} type="number" />
@@ -55,15 +57,16 @@ export default async function SaleCatalogue({ searchParams }: { searchParams: Pr
         </div>
       </form>
 
-      <p className="mt-6 text-sm text-muted">{vehicles.length} véhicule{vehicles.length > 1 ? "s" : ""}</p>
+      <p className="mt-8 font-display text-[19px] font-bold">{vehicles.length} véhicule{vehicles.length > 1 ? "s" : ""}</p>
       {vehicles.length === 0 ? (
-        <div className="card mt-4 p-8 text-center text-sm text-muted">Aucun véhicule ne correspond à vos critères.</div>
+        <div className="mt-4 rounded-[10px] border border-dashed border-[#d9e3d4] bg-surface p-10 text-center text-sm text-muted">Aucun véhicule ne correspond à vos critères.</div>
       ) : (
         <div className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {vehicles.map((v) => <SaleCard key={v.id} vehicle={v} />)}
         </div>
       )}
     </div>
+    </>
   );
 }
 

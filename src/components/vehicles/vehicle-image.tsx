@@ -1,16 +1,17 @@
 import Image from "next/image";
 
-export function VehicleImage({ src, alt, isDemo, className = "", priority }: {
+export function VehicleImage({ src, alt, isDemo, className = "", priority, zoom = false }: {
   src?: string | null;
   alt: string;
   isDemo?: boolean;
   className?: string;
   priority?: boolean;
+  zoom?: boolean;
 }) {
   return (
     <div className={`relative overflow-hidden bg-surface ${className}`}>
       {src ? (
-        <Image src={src} alt={alt} fill sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" className="object-cover" priority={priority} />
+        <Image src={src} alt={alt} fill sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" className={`object-cover ${zoom ? "transition-transform duration-500 group-hover:scale-[1.04]" : ""}`} priority={priority} />
       ) : (
         <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-muted">
           <svg width="64" height="32" viewBox="0 0 160 52" aria-hidden="true">
@@ -22,8 +23,8 @@ export function VehicleImage({ src, alt, isDemo, className = "", priority }: {
         </div>
       )}
       {isDemo && (
-        <span className="absolute left-2 top-2 rounded-full bg-black/65 px-2 py-0.5 text-[11px] font-medium text-white">
-          Exemple de démonstration
+        <span className="absolute bottom-3 left-4 rounded-[3px] bg-[#123325cc] px-2 py-1 text-[10px] font-medium text-white">
+          Illustration · démonstration
         </span>
       )}
     </div>

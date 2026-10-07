@@ -6,14 +6,14 @@ import bcrypt from "bcryptjs";
 const db = new PrismaClient();
 
 const HOME_SECTIONS = [
-  ["search", "Recherche rapide", ""],
-  ["featured", "Nos véhicules à la une", "Berlines, SUV, 4x4… pour tous vos besoins."],
-  ["paths", "Trois façons de rouler avec AUTO225", ""],
-  ["sale", "Achetez ou vendez votre véhicule", ""],
-  ["steps", "Réserver en 4 étapes", ""],
-  ["advantages", "Pourquoi choisir AUTO225", ""],
+  ["search", "Où allons-nous ?", ""],
+  ["featured", "À chacun sa route.", ""],
+  ["paths", "Votre voiture peut aller *plus loin.*", ""],
+  ["steps", "Votre trajet, en trois étapes.", ""],
+  ["sale", "La prochaine est peut-être ici.", ""],
+  ["advantages", "Pourquoi choisir AUTO225 ?", ""],
   ["reviews", "Avis de nos clients", ""],
-  ["faq", "Questions fréquentes", ""],
+  ["faq", "Avant de prendre la route.", ""],
   ["contact", "Une question ? Parlons-en.", ""],
 ] as const;
 

@@ -5,7 +5,7 @@ import { db } from "@/lib/db";
 export const metadata = { title: "Contenus" };
 
 const SECTION_NAMES: Record<string, string> = {
-  search: "Recherche rapide", featured: "Véhicules à la une", paths: "Les trois parcours", sale: "Achat & vente", steps: "Étapes de réservation",
+  search: "Recherche rapide", featured: "Véhicules à la une", paths: "Bannière propriétaires", sale: "Achat & vente", steps: "Étapes de réservation",
   advantages: "Avantages", reviews: "Avis clients", faq: "Questions fréquentes", contact: "Contact",
 };
 
@@ -23,7 +23,7 @@ export default async function ContentAdmin() {
 
       <section>
         <h2 className="text-lg font-bold">Accueil : sections sous le premier écran</h2>
-        <p className="text-sm text-muted">Modifiez l&apos;ordre (numéro), les titres et l&apos;affichage de chaque section.</p>
+        <p className="text-sm text-muted">Modifiez l&apos;ordre (numéro), les titres et l&apos;affichage de chaque section. Entourez des mots d&apos;astérisques pour les mettre en orange (ex. : aller *plus loin.*).</p>
         <ActionForm action={saveHomeSections} className="card mt-3 space-y-3 p-5">
           {sections.map((s) => (
             <div key={s.key} className="grid gap-2 border-b border-line pb-3 sm:grid-cols-[70px_160px_1fr_1fr_auto] sm:items-center">
