@@ -1,10 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import { DM_Sans, Manrope } from "next/font/google";
+import localFont from "next/font/local";
 import { appUrl } from "@/lib/mail";
 import "./globals.css";
 
-const dmSans = DM_Sans({ subsets: ["latin"], weight: ["400", "500", "600", "700"], variable: "--font-dm-sans", display: "swap" });
-const manrope = Manrope({ subsets: ["latin"], weight: ["500", "600", "700", "800"], variable: "--font-manrope", display: "swap" });
+// Polices du design, hébergées avec le site (voir src/app/fonts/README.md).
+const dmSans = localFont({ src: "./fonts/DMSans-latin.woff2", weight: "400 700", variable: "--font-dm-sans", display: "swap" });
+const manrope = localFont({ src: "./fonts/Manrope-latin.woff2", weight: "500 800", variable: "--font-manrope", display: "swap" });
 
 export const metadata: Metadata = {
   metadataBase: new URL(appUrl()),
