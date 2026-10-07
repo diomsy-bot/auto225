@@ -47,6 +47,9 @@ export function stripContactInfo(text: string): string {
     .replace(EMAIL, "")
     .replace(PHONE, (m) => (/^(?:\+|00)/.test(m) || m.replace(/\D/g, "").length >= 10 ? "" : m))
     .replace(CONTACT_WORDS, "")
+    // Ponctuation orpheline laissée par les retraits (« à Abobo, . »).
+    .replace(/[ \t]*,[ \t]*(?=[.!?]|$)/gm, "")
+    .replace(/[ \t]+([.,!?])/g, "$1")
     .replace(/[ \t]{2,}/g, " ")
     .replace(/\n{3,}/g, "\n\n")
     .trim();

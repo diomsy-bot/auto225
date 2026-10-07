@@ -15,6 +15,9 @@ describe("stripContactInfo", () => {
     expect(out).not.toContain("coinafrique");
     expect(out).toContain("Belle voiture.");
   });
+  it("ne laisse pas de ponctuation orpheline", () => {
+    expect(stripContactInfo("Véhicule visible à Abobo, contactez AUTO225.")).toBe("Véhicule visible à Abobo.");
+  });
   it("garde les petits nombres utiles", () => {
     expect(stripContactInfo("Moteur 2.4, 5 places, année 2008")).toBe("Moteur 2.4, 5 places, année 2008");
     expect(stripContactInfo("Prix 12 500 000 FCFA")).toBe("Prix 12 500 000 FCFA");
