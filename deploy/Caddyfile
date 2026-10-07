@@ -1,0 +1,20 @@
+# Proxy HTTPS d'AUTO225.COM.
+# Caddy obtient et renouvelle automatiquement les certificats Let's Encrypt
+# dès que le DNS du domaine pointe vers ce serveur (ports 80 et 443 ouverts).
+{
+	email {$ACME_EMAIL}
+}
+
+{$DOMAIN} {
+	encode zstd gzip
+	# Les photos de véhicules et justificatifs peuvent être volumineux.
+	request_body {
+		max_size 30MB
+	}
+	reverse_proxy app:3000
+}
+
+# Redirige www.auto225.com vers auto225.com.
+www.{$DOMAIN} {
+	redir https://{$DOMAIN}{uri} permanent
+}
