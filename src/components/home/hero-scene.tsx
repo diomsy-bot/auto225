@@ -60,7 +60,7 @@ export function HeroScene({ videoUrl, posterUrl }: Props) {
           aria-label="Véhicule sur la route — image d'ambiance"
         />
       )}
-      <div className="absolute inset-0 bg-[linear-gradient(90deg,#092318e8,#09231894)] sm:bg-[linear-gradient(90deg,rgba(9,26,19,.91),rgba(9,26,19,.57)_47%,rgba(9,26,19,.04))]" aria-hidden="true" />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(6,38,22,.93),rgba(6,38,22,.86))] lg:bg-[linear-gradient(90deg,rgba(6,38,22,.95),rgba(6,38,22,.8)_50%,rgba(6,38,22,.5))]" aria-hidden="true" />
       <button
         type="button"
         onClick={() => setPaused((p) => !p)}
