@@ -6,6 +6,8 @@ import "./globals.css";
 // Polices du design, hébergées avec le site (voir src/app/fonts/README.md).
 const dmSans = localFont({ src: "./fonts/DMSans-latin.woff2", weight: "400 700", variable: "--font-dm-sans", display: "swap" });
 const manrope = localFont({ src: "./fonts/Manrope-latin.woff2", weight: "500 800", variable: "--font-manrope", display: "swap" });
+// Titres de l'accueil : Archivo variable (graisse et largeur), pour les grands titres en capitales.
+const archivo = localFont({ src: "./fonts/Archivo-latin.woff2", weight: "100 900", variable: "--font-archivo", display: "swap" });
 
 export const metadata: Metadata = {
   metadataBase: new URL(appUrl()),
@@ -20,7 +22,7 @@ export const viewport: Viewport = { themeColor: "#145c3c" };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fr" className={`${dmSans.variable} ${manrope.variable}`}>
+    <html lang="fr" className={`${dmSans.variable} ${manrope.variable} ${archivo.variable}`}>
       <body className="min-h-screen font-sans antialiased">{children}</body>
     </html>
   );
